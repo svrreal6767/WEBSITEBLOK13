@@ -524,6 +524,19 @@ button#mulai,button#lanjut,button#kembali,button#stop,button#ulangSalah,button#a
 </style>
 <style>.sb-brand .logo{background:none;border-radius:0}.sb-brand .logo img{width:100%;height:100%;object-fit:contain}.langkah.muncul{animation:muncul .28s ease-out}@keyframes muncul{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}</style>
 <style>
+#topikBtn{display:none}
+@media (max-width:860px){
+  #topikBtn:not([hidden]){display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;margin:14px 0 6px;padding:11px 16px;
+    border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;text-align:left;box-shadow:var(--shadow)}
+  #topikBtn span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;font-size:15px}
+  #topikBtn small{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  #topikBtn svg{width:20px;height:20px;flex:none;transition:transform .25s}
+  #topikBtn[aria-expanded="true"] svg{transform:rotate(180deg)}
+  nav.side.lipat:not(.buka){display:none!important}
+  nav.side.lipat.buka{max-height:60vh!important;overflow-y:auto!important;border:1px solid var(--line)!important;border-radius:12px;padding:8px 10px!important;margin-bottom:16px!important;background:var(--surface)}
+}
+</style>
+<style>
 .mnav,.mbrand,.sb-tutup{display:none}
 @media (max-width:860px){
   .sb{position:fixed!important;inset:0 auto 0 0!important;width:270px!important;height:100%!important;flex-direction:column!important;align-items:stretch!important;
@@ -3537,6 +3550,24 @@ function fcChips(){
   document.getElementById('sbTutup').addEventListener('click',function(){ t(false); });
   document.querySelectorAll('.sb .tab').forEach(function(x){ x.addEventListener('click',function(){ t(false); }); });
   addEventListener('keydown',function(e){ if(e.key==='Escape') t(false); });
+})();
+
+/* HP: daftar topik dilipat jadi satu tombol dropdown */
+(function(){
+  var nav=document.getElementById('nav'); if(!nav) return;
+  var b=document.createElement('button'); b.id='topikBtn'; b.type='button'; b.setAttribute('aria-expanded','false');
+  nav.parentNode.insertBefore(b,nav);
+  function sync(){
+    var a=nav.querySelector('a.aktif');
+    b.hidden=nav.hidden||!nav.querySelector('a');
+    b.innerHTML='<span><small>Topik</small>'+(a?a.textContent.trim():'Pilih topik')+'</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>';
+  }
+  function set(v){ nav.classList.toggle('buka',v); b.setAttribute('aria-expanded',String(v)); }
+  nav.classList.add('lipat');
+  b.addEventListener('click',function(){ set(!nav.classList.contains('buka')); });
+  nav.addEventListener('click',function(e){ if(e.target.closest('a')) set(false); });
+  new MutationObserver(sync).observe(nav,{subtree:true,childList:true,attributes:true,attributeFilter:['class','hidden']});
+  sync();
 })();
 </script>
 </body></html>
